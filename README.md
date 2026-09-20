@@ -96,7 +96,6 @@ def tr_my_filter(y, k=1.0, **_):
 
 - 大文件仅缓存元数据；选中光斑时再读取波形 / RH
 - 地图点位默认降采样显示
-- **请勿将 NASA 大体积 HDF5 提交进公开仓库**；README 中说明获取方式即可
 
 GEDI 产品可从 [NASA LP DAAC](https://lpdaac.usgs.gov/) 获取（可能需要注册）。
 
@@ -151,7 +150,7 @@ MIT，详见 [LICENSE](LICENSE)。
 
 Desktop tool for browsing **GEDI L1B / L2A** footprints and processing waveforms, built with **PySide6**.
 
-Modular, menu-driven UI (CloudCompare-style workflow): file tree with visibility checkboxes, footprint map, waveform panel, plugin registry for transforms/metrics.
+Modular, menu-driven UI : file tree with visibility checkboxes, footprint map, waveform panel, plugin registry for transforms/metrics.
 
 ## Features
 
@@ -243,7 +242,6 @@ Restart the app after registering new modules.
 
 - Large granules: only metadata is cached; waveforms/RH are read when a shot is selected.
 - Map points are downsampled for display.
-- **Do not commit large NASA HDF5 files to the repository.** Provide download instructions instead.
 
 Obtain GEDI products from [NASA LP DAAC](https://lpdaac.usgs.gov/) (registration may be required).
 

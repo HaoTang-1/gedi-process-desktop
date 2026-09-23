@@ -179,3 +179,34 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# C++ / Qt build
+cpp/build/
+cpp/**/build/
+*.obj
+*.o
+*.exe
+*.dll
+*.a
+*.lib
+*.pdb
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+.ninja_deps
+.ninja_log
+build.ninja
+*_autogen/
+
+# Raster side-caches (large, machine-local)
+.gedi_tiles/
+.gedi_preview/
+*.preview.png
+*.preview.bounds.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

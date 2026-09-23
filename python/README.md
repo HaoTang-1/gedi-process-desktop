@@ -50,3 +50,58 @@ python tests_smoke_ui.py
 python tests_smoke_layout.py
 python tests_smoke_interact.py
 ```
+
+---
+
+# GEDI Process Desktop — Python / PySide6 (English)
+
+PySide6 desktop app: GEDI L1B/L2A footprints, waveform processing, transforms, and batch export.
+
+## Requirements
+
+- Python 3.10+
+- PySide6, h5py, numpy, scipy, matplotlib, pandas, PyWavelets
+
+```bash
+pip install -r requirements.txt
+```
+
+Or with conda:
+
+```bash
+conda create -n gedi_desktop python=3.11 -y
+conda activate gedi_desktop
+pip install -r requirements.txt
+```
+
+## Run
+
+```bash
+python main.py
+python main.py /path/to/GEDI01_B_xxx.h5 /path/to/GEDI02_A_xxx.h5
+```
+
+Windows: `run.bat` (`GEDI_PYTHON` selects the interpreter).
+
+## Usage
+
+1. **File → Open Data Files / Open Folder**
+2. Checkbox in the layer tree toggles footprints; right-click to remove a layer
+3. Drag to pan, wheel to zoom, click a footprint
+4. Waveform / RH on the right (Height ↑ / Intensity →)
+5. **Transform**: filters / FFT / wavelets, etc.
+6. **Compute** / **Batch**: metrics and CSV export
+7. **Help → Language**: Chinese / English
+
+## Extending
+
+Register transforms in `app/processing/transforms.py` and metrics in `app/processing/builtin_metrics.py`. They appear in the menus automatically.
+
+## Tests
+
+```bash
+python tests_smoke.py
+python tests_smoke_ui.py
+python tests_smoke_layout.py
+python tests_smoke_interact.py
+```

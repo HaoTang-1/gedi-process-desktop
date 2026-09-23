@@ -1,6 +1,7 @@
 #pragma once
 #include <QImage>
 #include <QString>
+#include <functional>
 #include <optional>
 
 namespace data {
@@ -15,10 +16,12 @@ struct RasterInfo {
     bool hasPyramid = false;
 };
 
-// Load preview + metadata; GeoTIFF is converted via rasterio helper (cached PNG+bounds)
+// Load preview + metadata; GeoTIFF via native C++ first, Python/rasterio fallback
 RasterInfo inspectRaster(const QString& path, bool tryPyramid = true);
 QImage loadRasterPreview(const QString& path, int maxDim = 1600);
 bool convertGeoTiffToPreview(const QString& src, QString& pngOut, QString& metaJson, QString& err);
+bool buildTilePyramid(const QString& srcTif, const QString& outDir,
+                      const std::function<void(int z, int zmax, QString msg)>& progress = {});
 
 // Portable tool discovery (no machine-specific paths required)
 QString findPython();

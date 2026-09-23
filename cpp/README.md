@@ -1,147 +1,91 @@
+<p align="center">
+  <img src="assets/app.png" alt="GEDI Process Desktop" width="96" />
+</p>
+
 # GEDI Process Desktop — C++ / Qt 6
 
-Qt 6 C++ 重写版：异步在线底图、Web 瓦片缓存、本地栅格金字塔，显示为 **EPSG:4326**（plate carrée，与 QGIS 一致）。
+Qt 6 C++ 重写版：异步在线底图、本地瓦片金字塔、**原生 GeoTIFF 解码**（无需 Python）。
 
-## 依赖
+显示坐标系 **EPSG:4326**（plate carrée，与 QGIS 一致）。
+
+**中文** / **English** 见下。
+
+---
+
+## 中文
+
+### 依赖
 
 | 组件 | 说明 |
 |------|------|
 | Qt 6 | Widgets、Core、Gui、Concurrent、Network |
-| CMake ≥ 3.16 | Ninja 或 MinGW Makefiles |
+| CMake ≥ 3.16 | Ninja 或 MinGW |
 | C++17 | MinGW 或 MSVC |
-| Python 3（可选） | GeoTIFF 预览、瓦片金字塔（`rasterio` / `numpy` / `Pillow`） |
-| hdf5.dll（可选） | 动态加载 HDF5；放在 exe 旁或 PATH |
+| hdf5.dll（可选） | 动态加载 HDF5 |
+| Python 3（可选） | 仅冷门 GeoTIFF 压缩时回退 |
 
-## 构建
+### 构建
 
 ```bat
 cmake -S . -B build -DQT_ROOT=C:\Qt\6.10.1\mingw_64
 cmake --build build -j
 ```
 
-或 Windows 脚本（可预设 `QT_DIR`、`MINGW_DIR`、`CMAKE_EXE`、`NINJA_EXE`、`HDF5_DLL`）：
+或：
 
 ```bat
 tools\build.bat
 ```
 
-产物：`build\GEDIProcessDesktopCpp.exe`。脚本会尝试 `windeployqt` 并复制运行时 DLL。
+产物：`build\GEDIProcessDesktopCpp.exe`。
 
-## 环境变量
+### 安装包
+
+```bat
+cd ..\packaging
+pack_cpp.bat
+```
+
+默认路径：`C:\Program Files (x86)\GEDIProcessDesktopCpp`。
+
+### 环境变量
 
 | 变量 | 作用 |
 |------|------|
 | `GEDI_PYTHON` | Python 解释器 |
-| `GEDI_TOOLS_DIR` | `tools` 目录（默认：exe 旁或上一级 `tools`） |
-| `GEDI_SAMPLE_DIR` | 文件对话框默认目录 |
-| `GEDI_HDF5_DLL` / `GEDI_HDF5_BIN` | HDF5 库 / `h5dump` |
+| `GEDI_TOOLS_DIR` | `tools` 目录 |
+| `GEDI_SAMPLE_DIR` | 示例数据目录 |
+| `GEDI_HDF5_DLL` / `GEDI_HDF5_BIN` | HDF5 / `h5dump` |
 
-## 本地栅格金字塔
+### GeoTIFF 与金字塔
 
-导入大图时可自动生成旁路目录 `<影像所在目录>\.gedi_tiles\`：
+- 原生支持：未压缩 / PackBits / LZW / Deflate，8/16 位，读 `ModelPixelScale` + `ModelTiepoint`
+- 金字塔：`<影像目录>\.gedi_tiles\`（`meta.json` 存在则不重建）
+- 命令行：`--tif-preview` / `--tif-pyramid`
 
-```
-meta.json     # 存在则绝不重建
-z/x/y.png     # z0–z6，边缘瓦片不补黑边
-```
+### 波形处理
 
-手动构建：
+归一化 / 基线 / 去趋势；SG、滑动平均、中值、高斯；Butterworth 低/高/带通/带阻；
+导数、积分、包络、滑动 RMS、阈值、反转、重采样；FFT 幅度/相位/PSD、**IFFT**、频谱去噪。
 
-```bash
-python tools/build_tile_pyramid.py <src.tif> <tiles_dir>
-python tools/tif_to_png.py <src.tif> <out.png>   # 预览 + bounds.json
-```
+### Logo
 
-## 地图说明
+替换 `assets/app.ico` + `assets/app.png` 后重新编译打包即可。
 
-- 显示坐标系：**EPSG:4326**（等经纬，全球 2:1 宽幅）
-- 在线 XYZ 瓦片（Web Mercator）按纬向条带变换后贴合，与光斑对齐
-- 瓦片下载为异步队列，UI 不阻塞
-- 底图源：Esri 影像 / 山体阴影、NASA Blue Marble、OSM
+### 联系方式
 
-## 源码结构
-
-```
-src/
-  core/         I18n、TransformRegistry
-  data/         H5Dyn、GediLoader、RasterInfo、FieldDocs
-  map/          MapWidget、TileCache、BasemapManager、ImageTilePyramid
-  processing/   Metrics、Transforms、WaveformOps、Calculator
-  ui/           MainWindow 及面板
-tools/          构建与栅格脚本
-```
+- Email：[tangh@std.uestc.edu.cn](mailto:tangh@std.uestc.edu.cn)
 
 ---
 
-# GEDI Process Desktop — C++ / Qt 6 (English)
+## English
 
-Qt 6 C++ rewrite: async online basemap, web tile cache, local raster tile pyramid. Display CRS is **EPSG:4326** (plate carrée, same as QGIS).
+Native Qt 6 rewrite: async basemap, tile pyramid, **native GeoTIFF** (no Python required). Display CRS **EPSG:4326** (plate carrée).
 
-## Requirements
+Build with `tools\build.bat` or CMake. Package with `../packaging/pack_cpp.bat` (default install: `C:\Program Files (x86)\GEDIProcessDesktopCpp`).
 
-| Component | Notes |
-|-----------|--------|
-| Qt 6 | Widgets, Core, Gui, Concurrent, Network |
-| CMake ≥ 3.16 | Ninja or MinGW Makefiles |
-| C++17 | MinGW or MSVC |
-| Python 3 (optional) | GeoTIFF preview, tile pyramid (`rasterio` / `numpy` / `Pillow`) |
-| hdf5.dll (optional) | HDF5 loaded dynamically; place next to the exe or on PATH |
+Signal processing: filters (SG/median/Gaussian/Butterworth LP/HP/BP/BS), time-domain ops (deriv/integral/envelope/RMS/…), FFT mag/phase/PSD, IFFT.
 
-## Build
+Replace `assets/app.ico` + `app.png` to change branding.
 
-```bat
-cmake -S . -B build -DQT_ROOT=C:\Qt\6.10.1\mingw_64
-cmake --build build -j
-```
-
-Or the Windows script (preset `QT_DIR`, `MINGW_DIR`, `CMAKE_EXE`, `NINJA_EXE`, `HDF5_DLL` if needed):
-
-```bat
-tools\build.bat
-```
-
-Output: `build\GEDIProcessDesktopCpp.exe`. The script runs `windeployqt` and copies runtime DLLs.
-
-## Environment variables
-
-| Variable | Purpose |
-|----------|---------|
-| `GEDI_PYTHON` | Python interpreter |
-| `GEDI_TOOLS_DIR` | `tools` directory (default: next to exe or one level up) |
-| `GEDI_SAMPLE_DIR` | File dialog default folder |
-| `GEDI_HDF5_DLL` / `GEDI_HDF5_BIN` | HDF5 library / `h5dump` |
-
-## Local raster tile pyramid
-
-Importing a large image can create a side folder `<image_dir>\.gedi_tiles\`:
-
-```
-meta.json     # if present, never rebuild
-z/x/y.png     # z0–z6; edge tiles are not black-padded
-```
-
-Build manually:
-
-```bash
-python tools/build_tile_pyramid.py <src.tif> <tiles_dir>
-python tools/tif_to_png.py <src.tif> <out.png>   # preview + bounds.json
-```
-
-## Map notes
-
-- Display CRS: **EPSG:4326** (equirectangular; world is 2:1 wide)
-- Online XYZ tiles (Web Mercator) are warped by latitude strips so they align with footprints
-- Tiles download on an async queue; the UI never blocks
-- Basemaps: Esri Imagery / Shaded Relief, NASA Blue Marble, OSM
-
-## Source layout
-
-```
-src/
-  core/         I18n, TransformRegistry
-  data/         H5Dyn, GediLoader, RasterInfo, FieldDocs
-  map/          MapWidget, TileCache, BasemapManager, ImageTilePyramid
-  processing/   Metrics, Transforms, WaveformOps, Calculator
-  ui/           MainWindow and panels
-tools/          build and raster scripts
-```
+**Contact:** [tangh@std.uestc.edu.cn](mailto:tangh@std.uestc.edu.cn)

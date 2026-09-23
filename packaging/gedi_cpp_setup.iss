@@ -20,20 +20,21 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppCopyright=Copyright (C) GEDI Process Desktop Contributors
-DefaultDirName={autopf}\GEDIProcessDesktopCpp
+DefaultDirName={commonpf32}\GEDIProcessDesktopCpp
 DefaultGroupName={#MyAppName}
 OutputDir=installer_output
 OutputBaseFilename=GEDIProcessDesktopCpp-{#MyAppVersion}-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-ArchitecturesInstallIn64BitMode=x64compatible
 ArchitecturesAllowed=x64compatible
-PrivilegesRequired=lowest
+; install under C:\Program Files (x86) on 64-bit Windows
+PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 UninstallDisplayIcon={app}\{#MyAppExeName}
-; 无图标时可注释下行
-; SetupIconFile=..\cpp\assets\app.ico
+SetupIconFile=setup.ico
+WizardSmallImageFile=wizard_small.png
+WizardImageFile=wizard_image.png
 LicenseFile=..\LICENSE
 
 [Languages]
@@ -60,6 +61,8 @@ Source: "..\cpp\tools\*.py"; DestDir: "{app}\tools"; Flags: ignoreversion
 ; 许可与说明
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\cpp\README.md"; DestDir: "{app}"; Flags: ignoreversion
+; 图标（占位 logo，可直接替换 cpp\assets\app.ico）
+Source: "..\cpp\assets\app.ico"; DestDir: "{app}\assets"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

@@ -20,12 +20,14 @@ find_package(ZLIB QUIET)
 
 add_executable(GEDIProcessDesktopCpp WIN32
     src/main.cpp
+    app.rc
     src/core/I18n.cpp
     src/core/TransformRegistry.cpp
     src/data/H5Dyn.cpp
     src/data/GediLoader.cpp
     src/data/FieldDocs.cpp
     src/data/RasterInfo.cpp
+    src/data/GeoTiffLite.cpp
     src/processing/WaveformOps.cpp
     src/processing/Metrics.cpp
     src/processing/Transforms.cpp

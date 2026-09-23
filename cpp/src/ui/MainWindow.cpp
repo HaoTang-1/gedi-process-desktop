@@ -238,53 +238,23 @@ void MainWindow::addRasterLayers()
             bool ok = m_map->loadLocalTiles(tiles);
             // meta.json exists → never rebuild; missing → build once
             if (!ok && !haveMeta) {
-                const QString py = data::findPython();
-                const QString script =
-                    data::findToolScript(QStringLiteral("build_tile_pyramid.py"));
-                QProcess pr;
-                pr.start(py, {script, p, tiles});
-                if (!pr.waitForStarted(8000)) {
-                    pd.setLabelText(QStringLiteral("无法启动金字塔脚本，使用预览图"));
-                } else {
-                    const int zLevels = 7;
-                    QElapsedTimer tick;
-                    tick.start();
-                    pd.setRange(0, 100);
-                    pd.setLabelText(QStringLiteral("构建瓦片金字塔… 层 0/%1").arg(zLevels));
+                QElapsedTimer tick;
+                tick.start();
+                pd.setRange(0, 100);
+                pd.setLabelText(QStringLiteral("构建瓦片金字塔…"));
+                QApplication::processEvents();
+                const bool built = data::buildTilePyramid(p, tiles, [&](int z, int zmax, QString msg) {
+                    const double frac = zmax > 0 ? double(z + 1) / (zmax + 1) : 1.0;
+                    const int elapsed = int(tick.elapsed() / 1000);
+                    const int est = std::max(1, int(elapsed / std::max(0.05, frac)) - elapsed);
+                    pd.setLabelText(QStringLiteral("%1  剩约 %2 秒").arg(msg).arg(est));
+                    pd.setValue(std::min(95, int(frac * 95)));
                     QApplication::processEvents();
-                    pr.setReadChannel(QProcess::StandardOutput);
-                    int doneLevels = 0;
-                    while (!pr.waitForFinished(200)) {
-                        while (pr.canReadLine()) {
-                            const QString line = QString::fromUtf8(pr.readLine());
-                            // "level z tiles N size W H"
-                            if (line.startsWith(QLatin1String("level"))) {
-                                doneLevels = std::min(zLevels, doneLevels + 1);
-                                const int lv = line.section(QLatin1Char(' '), 1, 1).toInt();
-                                const QString nTiles = line.section(QLatin1Char(' '), 3, 3);
-                                const double frac = double(doneLevels) / zLevels;
-                                const int elapsed = int(tick.elapsed() / 1000);
-                                const int est = std::max(1, int(elapsed / std::max(0.08, frac)) - elapsed);
-                                pd.setLabelText(
-                                    QStringLiteral("构建瓦片金字塔… 层 %1/%2  瓦片 %3  剩约 %4 秒")
-                                        .arg(lv + 1)
-                                        .arg(zLevels)
-                                        .arg(nTiles)
-                                        .arg(est));
-                                pd.setValue(std::min(95, int(frac * 95)));
-                                QApplication::processEvents();
-                            }
-                        }
-                        if (pd.wasCanceled()) {
-                            pr.kill();
-                            break;
-                        }
-                    }
-                    pd.setLabelText(QStringLiteral("写入 meta.json…"));
-                    pd.setValue(100);
-                    QApplication::processEvents();
-                    ok = m_map->loadLocalTiles(tiles);
-                }
+                    return !pd.wasCanceled();
+                });
+                Q_UNUSED(built);
+                pd.setValue(100);
+                ok = m_map->loadLocalTiles(tiles);
             } else if (haveMeta) {
                 // already built — instant
                 pd.setLabelText(QStringLiteral("使用已有金字塔 %1").arg(QFileInfo(p).fileName()));
@@ -453,8 +423,16 @@ void MainWindow::buildMenus()
     mLang->addAction(QStringLiteral("中文"), this, [this] { switchLang(QStringLiteral("zh")); });
     mLang->addAction(QStringLiteral("English"), this, [this] { switchLang(QStringLiteral("en")); });
     mHelp->addAction(i18n::t("act_about"), this, [this] {
-        QMessageBox::about(this, i18n::t("act_about"),
-                           QStringLiteral("GEDI Process Desktop C++ / Qt\nEPSG:4326\nMIT License"));
+        QMessageBox::about(
+            this, i18n::t("act_about"),
+            QStringLiteral(
+                "GEDI Process Desktop C++ / Qt\n"
+                "EPSG:4326 (plate carrée)\n"
+                "\n"
+                "联系 / Contact\n"
+                "Email: tangh@std.uestc.edu.cn\n"
+                "\n"
+                "MIT License"));
     });
 }
 

@@ -124,7 +124,7 @@ static herr_t iterCb(hid_t, const char* name, const void*, void* op_data)
 QStringList searchHintPaths()
 {
     QStringList out;
-    const QString env = qGetenv("GEDI_HDF5_DLL");
+    const QString env = QString::fromLocal8Bit(qgetenv("GEDI_HDF5_DLL"));
     if (!env.isEmpty())
         out << env;
     const QString appDir = QCoreApplication::applicationDirPath();

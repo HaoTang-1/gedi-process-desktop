@@ -101,6 +101,25 @@ gedi-process-desktop/
 
 ---
 
+## 安装包（Inno Setup）
+
+```bat
+:: 先构建 C++ 版（含 windeployqt）
+cd cpp
+tools\build.bat
+
+:: 再打包（本机已装 Inno Setup 6/7）
+cd ..\packaging
+pack_cpp.bat
+:: 或指定构建目录：
+:: set BUILD_DIR=F:\GEDI_process\gedi_desktop_cpp\build
+:: pack_cpp.bat
+```
+
+产物：`packaging\installer_output\GEDIProcessDesktopCpp-1.0.0-Setup.exe`。
+
+---
+
 ## 许可
 
 见 [LICENSE](LICENSE)（MIT）。

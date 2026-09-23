@@ -183,6 +183,7 @@ cython_debug/
 # C++ / Qt build
 cpp/build/
 cpp/**/build/
+packaging/installer_output/
 *.obj
 *.o
 *.exe
